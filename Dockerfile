@@ -1,4 +1,4 @@
-FROM ubuntu:15.04
+FROM ubuntu:16.04
 MAINTAINER Cyrille Le Clerc <cleclerc@cloudbees.com>
 
 #
@@ -27,8 +27,8 @@ MAINTAINER Cyrille Le Clerc <cleclerc@cloudbees.com>
 #================================================
 # Customize sources for apt-get
 #================================================
-RUN  echo "deb http://archive.ubuntu.com/ubuntu vivid main universe\n" > /etc/apt/sources.list \
-  && echo "deb http://archive.ubuntu.com/ubuntu vivid-updates main universe\n" >> /etc/apt/sources.list
+RUN  echo "deb http://archive.ubuntu.com/ubuntu xenial main universe\n" > /etc/apt/sources.list \
+  && echo "deb http://archive.ubuntu.com/ubuntu xenial-updates main universe\n" >> /etc/apt/sources.list
 
 RUN apt-get update -qqy \
   && apt-get -qqy --no-install-recommends install software-properties-common \
@@ -58,8 +58,9 @@ RUN apt-get update -qqy \
   && rm -rf /var/lib/apt/lists/* \
   && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' ./usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security
 
-# workaround https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=775775
-RUN [ -f "/etc/ssl/certs/java/cacerts" ] || /var/lib/dpkg/info/ca-certificates-java.postinst configure
+# workaround "You are using pip version 8.1.1, however version 9.0.1 is available."
+# workaround "Could not import setuptools which is required to install from a source distribution."
+RUN pip install --upgrade pip setuptools
 
 #==========
 # Maven
@@ -153,7 +154,7 @@ RUN mkdir -p /home/jenkins/.local/bin/ \
 # NODE JS
 # See https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
 #====================================
-RUN curl -sL https://deb.nodesource.com/setup_4.x | bash \
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash \
     && apt-get install -y nodejs
 
 #====================================
